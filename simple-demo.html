@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>simple flip demo</title>
+<style type="text/css">
+html,body {
+    width: 100%;
+    height: 100%;
+    font-family: Arial;
+}
+.left ,.right {
+    width: 45%;
+    display: inline-block;
+}
+.right {
+    float: right;
+}
+.demo {
+    text-align: center;
+}
+.list-complete-item {
+  display: block;
+  /*margin: 10px;*/
+  height: 50px;
+  width: 100%;
+  text-align: center;
+}
+.list-complete-item.red {
+      background-color: red; 
+}
+.list-complete-item.green {
+      background-color: green; 
+}
+.list-complete-item.black {
+      background-color: black; 
+}
+
+.list-complete-item.orange {
+      background-color: orange; 
+}
+
+.list-complete-item.remove {
+    transition: all 1s;
+    transform: translateY(-50px);
+    opacity: 0;
+    position: absolute;
+    z-index: -1
+}
+h1 {
+    text-align: center;
+}
+#flip-items {
+    position: relative;
+}
+</style>
+</head>
+    <body>
+    <div class="left">
+       <h1>运用FLIP的效果</h1>
+    <div id="flip-demo" class="demo"><button>Remove the second li element</button> <p id="flip-items"><span class="list-complete-item red">
+          10
+        </span><span class="list-complete-item green" style="">
+          1
+        </span><span class="list-complete-item orange" style="">
+          2
+        </span>
+  </p></div> 
+    </div>
+<div class="right">
+       <h1>普通效果</h1>
+    <div id="normal-demo" class="demo"><button>Remove the second li element</button> <p id="normal-items"><span class="list-complete-item red">
+          10
+        </span><span class="list-complete-item green" style="">
+          1
+        </span><span class="list-complete-item orange" style="">
+          2
+        </span></p></div> 
+    </div>
+
+    <script type="text/javascript">
+        var flipControl = document.getElementById('flip-demo')
+        var flipRemoveBtn = flipControl.children[0]
+        var flipItems = document.getElementById('flip-items')
+        var normalRemoveBtn = document.getElementById('normal-demo').children[0]
+        var normalItems = document.getElementById('normal-items')
+        // var span = document.createElement('span')
+        // var text = document.createTextNode('0')
+        // span.appendChild(text)
+        // span.className += 'list-complete-item' 
+        var startPos = {}
+        var stime = 0
+        var pos = {}
+        var time = 0
+        var diffX = 0
+        var diffY = 0    
+        var flipNodeA = flipItems.childNodes[1]
+        var flipNodeB = flipItems.childNodes[2]
+
+        function invert() {
+            pos =  flipNodeB.getBoundingClientRect()
+            diffX = startPos.left-pos.left
+            diffY = startPos.top-pos.top
+            flipNodeB.style.transform = 'translate('+(diffX)+'px,'+(diffY)+'px)'
+            window.requestAnimationFrame(update)
+            stime = window.performance.now()
+        }
+        function update() {
+            time = (window.performance.now() - stime)/1200
+            time = Math.min(1,Math.max(time,0))
+            console.log(time)
+            flipNodeB.style.transform = 'translate('+(diffX*(1-time))+'px,'+(diffY*(1-time))+'px)'
+           
+            if (time < 1) {
+                  window.requestAnimationFrame(update);
+                } else {
+                flipNodeB.style.transform = ''
+            }
+
+        }
+    function first(argument) {
+        flipNodeA.removeEventListener('transitionend',first)
+        flipItems.removeChild(flipItems.childNodes[1])
+        // flipRemoveBtn.style.visile = "none"
+        }
+    flipRemoveBtn.addEventListener('click',function (event) {
+        startPos = flipNodeB.getBoundingClientRect()
+        flipNodeA.className += " remove"
+        window.requestAnimationFrame(invert)
+        flipNodeA.addEventListener('transitionend',first)
+
+    })
+
+    normalRemoveBtn.addEventListener('click',function (argument) {
+        normalItems.removeChild(normalItems.childNodes[1])
+
+    })
+    // add.addEventListener('click',function (event) {
+    //     flipItems.insertBefore(span,flipItems.children[1])
+    // },false)
+
+    </script>
+</body>
+</html>
